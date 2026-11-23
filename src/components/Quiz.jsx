@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import QUESTIONS from "../questions.js"
 import quizCompleteImg from "../assets/quiz-complete.png"
+import QuestionTimer from "./QuestionTimer.jsx"
 
 /**
  * Afficher la question en cours à l'utilisateur et lorsqu'il a répondu à la question, passer à une autre question.
@@ -17,9 +18,14 @@ export default function Quiz() {
   const quizIsComplete = activeQuestionIndex === QUESTIONS.length
 
   // Met à jour le state quand l'utilisateur sélectionne une réponse
-  function handleSelectAnswer(selectedAnswer) {
+  // useCallback mémorise la fonction pour éviter de la récréer à chaque rendu
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(selectedAnswer) {
     setUserAnswers((prevUserAnswers) => [...prevUserAnswers, selectedAnswer])
-  }
+  }, [])
+
+  // Si le timer a expiré, on passe à la question suivante
+  // Cette fonction utilise handleSelectAnswer et donc elle dépend aussi de handleSelectAnswer
+  const handleSkipAnswer = useCallback(() => handleSelectAnswer(null), [handleSelectAnswer])
 
   if (quizIsComplete) {
     return (
@@ -34,11 +40,14 @@ export default function Quiz() {
   // Copier le tableau des réponses pour ne pas perdre l'ordre d'origine
   const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers]
   // Modifier les réponses aléatoirement pour obtenir une valeur négative dans 50 cas sur 100 ou une valeur positive
+  // eslint-disable-next-line react-hooks/purity
   shuffledAnswers.sort(() => Math.random() - 0.5)
 
   return (
     <div id="quiz">
       <div id="question">
+        {/* À chaque fois que la question change, le composant est recréé grâce à "key */}
+        <QuestionTimer key={activeQuestionIndex} timeout={10000} onTimeout={handleSkipAnswer} />
         <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
           {shuffledAnswers.map((answer) => (
