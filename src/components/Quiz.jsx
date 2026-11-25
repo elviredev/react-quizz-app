@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react"
 import QUESTIONS from "../questions.js"
-import quizCompleteImg from "../assets/quiz-complete.png"
 import Question from "./Question.jsx"
+import Summary from "./Summary.jsx"
 
 /**
  * Afficher la question en cours à l'utilisateur et lorsqu'il a répondu à la question, passer à une autre question.
@@ -34,10 +34,7 @@ export default function Quiz() {
 
   if (quizIsComplete) {
     return (
-      <div id="summary">
-        <img src={quizCompleteImg} alt="Icône Trophé" />
-        <h2>Quiz terminé !</h2>
-      </div>
+      <Summary userAnswers={userAnswers} />
     )
   }
 
