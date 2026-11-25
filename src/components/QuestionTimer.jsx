@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
  * Si l'utilisateur n'a pas répondu à la question dans le temps imparti,
  * la question est considérée comme non répondu et la question suivante est affichée.
  */
-export default function QuestionTimer({ timeout, onTimeout }) {
+export default function QuestionTimer({ timeout, onTimeout, mode }) {
   const [remainingTime, setRemainingTime] = useState(timeout)
 
   // Utilisation de useEffect pour éviter les boucles infinies
@@ -27,5 +27,5 @@ export default function QuestionTimer({ timeout, onTimeout }) {
     return () => clearInterval(interval)
   }, [])
 
-  return <progress id="question-time" value={remainingTime} max={timeout} />
+  return <progress id="question-time" value={remainingTime} max={timeout} className={mode} />
 }
