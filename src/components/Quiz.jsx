@@ -8,40 +8,22 @@ import Question from "./Question.jsx"
  * Ce composant est chargé de passer d'une question à une autre et d'enregistrer les réponses de l'utilisateur
  */
 export default function Quiz() {
-  // State pour mettre à jour le style de la réponse (rouge si KO, vert si OK)
-  const [answerState, setAnswerState] = useState("")
   // On peut regarder le nb de réponses stocké dans ce tableau et en déduire l'index de la question active
   const [userAnswers, setUserAnswers] = useState([])
 
-  // State dérivé ou valeur calculée pour connaître le numéro de la question suivante qui s'affiche
-  const activeQuestionIndex =
-    answerState === "" ? userAnswers.length : userAnswers.length - 1
+  // Connaître le numéro de la question suivante qui s'affiche
+  const activeQuestionIndex = userAnswers.length
 
   // Autre valeur calculée pour savoir quand le quiz est terminé
   const quizIsComplete = activeQuestionIndex === QUESTIONS.length
 
   // Met à jour le state quand l'utilisateur sélectionne une réponse
   // useCallback mémorise la fonction pour éviter de la récréer à chaque rendu
-  const handleSelectAnswer = useCallback(
-    function handleSelectAnswer(selectedAnswer) {
-      setAnswerState("answered")
-      setUserAnswers((prevUserAnswers) => [...prevUserAnswers, selectedAnswer])
-
-      setTimeout(() => {
-        // Réponse OK
-        if (selectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]) {
-          setAnswerState("correct")
-        } else {
-          setAnswerState("wrong")
-        }
-
-        setTimeout(() => {
-          setAnswerState("")
-        }, 2000)
-      }, 1000)
-    },
-    [activeQuestionIndex],
-  )
+  const handleSelectAnswer = useCallback(function handleSelectAnswer(
+    selectedAnswer,
+  ) {
+    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, selectedAnswer])
+  }, [])
 
   // Si le timer a expiré, on passe à la question suivante
   // Cette fonction utilise handleSelectAnswer et donc elle dépend aussi de handleSelectAnswer
@@ -62,12 +44,9 @@ export default function Quiz() {
   return (
     <div id="quiz">
       <Question
-        // À chaque fois que la question change, le composant est recréé grâce à "key"
+        // À chaque fois que la question change, le composant est recréé grâce à "key" mais "key" est réservé pour React donc on crée notre propre props
         key={activeQuestionIndex}
-        questionText={QUESTIONS[activeQuestionIndex].text}
-        answers={QUESTIONS[activeQuestionIndex].answers}
-        answerState={answerState}
-        selectedAnswer={userAnswers[userAnswers.length - 1]}
+        questionIndex={activeQuestionIndex}
         onSelectAnswer={handleSelectAnswer}
         onSkipAnswer={handleSkipAnswer}
       />

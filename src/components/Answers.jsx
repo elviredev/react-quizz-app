@@ -2,6 +2,7 @@ import { useRef } from "react"
 
 export default function Answers({ answers, selectedAnswer, answerState, onSelect }) {
   // Pour gérer une valeur qui ne changera pas quand le composant est exécuté à nouveau. Cela évite d'utiliser useState et useEffect
+  // et de faire un nouveau rendu du composant
   const shuffledAnswers = useRef()
 
   /** Mélanger les réponses : ce code s'exécute uniquement s'il y a encore une question à afficher */
@@ -35,6 +36,7 @@ export default function Answers({ answers, selectedAnswer, answerState, onSelect
             <button
               onClick={() => onSelect(answer)}
               className={cssClass}
+              disabled={answerState !== ''}
             >
               {answer}
             </button>
